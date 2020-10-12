@@ -15,8 +15,7 @@ def getPDFname(path):
 
     pageArray = pageString.split()
 
-
-aun if ('Protocolo:' in pageArray):
+    if ('Protocolo:' in pageArray):
         indexProto = pageArray.index('Protocolo:')
         indexProtoNumber = indexProto + 1
         nameFile = pageArray[indexProtoNumber]
@@ -38,11 +37,15 @@ for item in os.listdir(pastaAtual):
             for (root, dirs, files) in os.walk(item):
                 for file in files:
                     oldFile = os.path.join(item, file)
-                    newFile = os.path.join(item, getPDFname(oldFile) + '.pdf')
+                    newFile = os.path.join(
+                        item, getPDFname(oldFile) + '.pdf')
+
                     if os.path.exists(newFile):
+                        time.sleep(1)
                         now = datetime.now()
                         localtime = now.strftime("%m.%d.%Y, %H.%M.%S")
+
                         newFile = os.path.join(
                             item, getPDFname(oldFile) + ' - ' + localtime + '.pdf')
-                        time.sleep(1)
+
                     os.rename(oldFile, newFile)
