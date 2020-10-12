@@ -15,17 +15,16 @@ def getPDFname(path):
 
     pageArray = pageString.split()
 
-    if pageArray.index('Protocolo:'):
+
+aun if ('Protocolo:' in pageArray):
         indexProto = pageArray.index('Protocolo:')
         indexProtoNumber = indexProto + 1
         nameFile = pageArray[indexProtoNumber]
 
-    elif pageArray.index('PROTOCOLO'):
+    if ('PROTOCOLO' in pageArray):
         indexProto = pageArray.index('PROTOCOLO')
         indexProtoNumber = indexProto + 1
         nameFile = pageArray[indexProtoNumber]
-    else:
-        print('[PROTOCOLO] ou [Protocolo:] não encontrado no PDF')
 
     return nameFile
 
