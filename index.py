@@ -6,7 +6,7 @@ import time
 
 def getPDFname(path):
     now = datetime.now()
-    nameFile = now.strftime("%m.%d.%Y, %H.%M.%S")
+    nameFile = now.strftime("Data %m.%d.%Y - Hora %H.%M.%S")
 
     pdfPath = pdf.PdfFileReader(path)
     page = pdfPath.getPage(0)
@@ -28,24 +28,30 @@ def getPDFname(path):
     return nameFile
 
 
-pastaAtual = os.path.dirname(os.path.realpath(__file__))
+try:
+    pastaAtual = os.path.dirname(os.path.realpath(__file__))
 
-for item in os.listdir(pastaAtual):
-    item = os.path.join(pastaAtual, item)
-    if os.path.isdir(item):
-        if item != os.path.join(pastaAtual, '.git') and item != os.path.join(pastaAtual, '.vscode'):
+    for item in os.listdir(pastaAtual):
+        item = os.path.join(pastaAtual, item)
+        if os.path.isdir(item):
             for (root, dirs, files) in os.walk(item):
                 for file in files:
-                    oldFile = os.path.join(item, file)
-                    newFile = os.path.join(
-                        item, getPDFname(oldFile) + '.pdf')
-
-                    if os.path.exists(newFile):
-                        time.sleep(1)
-                        now = datetime.now()
-                        localtime = now.strftime("%m.%d.%Y, %H.%M.%S")
-
+                    if file.endswith(".pdf"):
+                        oldFile = os.path.join(item, file)
                         newFile = os.path.join(
-                            item, getPDFname(oldFile) + ' - ' + localtime + '.pdf')
+                            item, getPDFname(oldFile) + '.pdf')
 
-                    os.rename(oldFile, newFile)
+                        if os.path.exists(newFile):
+                            time.sleep(1)
+                            now = datetime.now()
+                            localtime = now.strftime(
+                                "Data %m.%d.%Y - Hora %H.%M.%S")
+
+                            newFile = os.path.join(
+                                item, getPDFname(oldFile) + ' - ' + localtime + '.pdf')
+
+                        os.rename(oldFile, newFile)
+except Exception as err:
+    print(err)
+    print('Ocorreu um erro!')
+    input()
