@@ -2,6 +2,12 @@ import PyPDF2 as pdf
 import os
 from datetime import datetime
 import time
+import re
+
+
+def clearString(nameFile):
+    nameFile = re.sub('[^0-9]', '', nameFile)
+    return nameFile
 
 
 def getPDFname(path):
@@ -19,11 +25,12 @@ def getPDFname(path):
         indexProto = pageArray.index('Protocolo:')
         indexProtoNumber = indexProto + 1
         nameFile = pageArray[indexProtoNumber]
+        return clearString(nameFile)
 
-    if ('PROTOCOLO' in pageArray):
-        indexProto = pageArray.index('PROTOCOLO')
-        indexProtoNumber = indexProto + 1
-        nameFile = pageArray[indexProtoNumber]
+    for indice in pageArray:
+        if '0000000' in indice:
+            nameFile = indice
+            return clearString(nameFile)
 
     return nameFile
 
@@ -38,8 +45,12 @@ try:
                 for file in files:
                     if file.endswith(".pdf"):
                         oldFile = os.path.join(item, file)
+
+                        oldNameFile = str(file)
+                        newNameFile = getPDFname(oldFile)
+
                         newFile = os.path.join(
-                            item, getPDFname(oldFile) + '.pdf')
+                            item, newNameFile + '.pdf')
 
                         if os.path.exists(newFile):
                             time.sleep(1)
@@ -48,10 +59,17 @@ try:
                                 "Data %m.%d.%Y - Hora %H.%M.%S")
 
                             newFile = os.path.join(
-                                item, getPDFname(oldFile) + ' - ' + localtime + '.pdf')
+                                item, newNameFile + ' - ' + localtime + '.pdf')
 
+                        print('Nome: ' + oldNameFile +
+                              ' ----> ' + newNameFile + '\n')
                         os.rename(oldFile, newFile)
 except Exception as err:
     print(err)
     print('Ocorreu um erro!')
     input()
+
+
+print('Processo finalizado com sucesso, aperte qualquer tecla para sair!')
+
+input()
