@@ -28,7 +28,7 @@ def getPDFname(path):
         return clearString(nameFile)
 
     for indice in pageArray:
-        if '0000000' in indice:
+        if '000000' in indice:
             nameFile = indice
             return clearString(nameFile)
 
