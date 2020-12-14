@@ -19,6 +19,8 @@ def start():
             sg.CloseButton('Fechar')
         ],
         [sg.Output(size=(70, 12))],
+        [sg.ProgressBar(100, orientation='h', size=(46, 20),
+                        key='progress_bar')],
 
     ]
 
@@ -43,13 +45,14 @@ def start():
 
         elif event == 'Iniciar':
             try:
+                progress_value = 100 / totalPaths
                 threading.Thread(target=rename, args=(
-                    paths, window), daemon=True).start()
+                    paths, window, progress_value), daemon=True).start()
             except Exception as err:
                 sg.Popup('Ocorreu um erro!', err)
 
         elif event == '-THREAD-':
-            print('Got a message back from the thread: ', values[event])
+            print('Todos os arquivos renomeado com sucesso: ', values[event])
 
         elif event == 'Fechar' or event == sg.WIN_CLOSED:
             break
@@ -64,7 +67,7 @@ def getPDFByPath(selected_folder):
             if file.endswith(".pdf"):
                 pathObject = {
                     "name": file,
-                    "path": os.path.join(root, file)
+                    "path": root
                 }
                 paths_filtered_by_PDF.append(pathObject)
 
@@ -99,30 +102,44 @@ def getPDFname(path):
     return clearString(nameFile)
 
 
-def rename(oldPaths, window):
-    namesPDF = map(lambda x: x["path"], oldPaths)
+def rename(oldPaths, window, progress_value):
+    progress_bar = window.FindElement('progress_bar')
+    i = 0
 
     for item in oldPaths:
-        newNameFile = getPDFname(item["path"])
-        print(newNameFile)
+        oldNameFile = item["name"]
+
+        oldPathFile = os.path.join(item["path"], item["name"])
+        newNameFile = getPDFname(oldPathFile) + ".pdf"
+
+        newPathFile = os.path.join(item["path"], newNameFile)
+
+        if os.path.exists(newPathFile):
+            time.sleep(1)
+
+            now = datetime.now()
+            localtime = now.strftime(
+                "Data %m.%d.%Y - Hora %H.%M.%S")
+
+            newPathFile = os.path.join(
+                item["path"],
+                newNameFile
+                + ' - '
+                + localtime
+                + '.pdf'
+            )
+
+        print(
+            'Nome: '
+            + oldNameFile
+            + ' ----> '
+            + newNameFile
+            + '\n'
+        )
+        os.rename(oldPathFile, newPathFile)
+        i += progress_value
+        progress_bar.UpdateBar(i)
     window.write_event_value('-THREAD-', '** DONE **')
-    # oldNameFile = str(file)
-
-    # newFile = os.path.join(
-    #     item, newNameFile + '.pdf')
-
-    # if os.path.exists(newFile):
-    #     time.sleep(1)
-    #     now = datetime.now()
-    #     localtime = now.strftime(
-    #         "Data %m.%d.%Y - Hora %H.%M.%S")
-
-    #     newFile = os.path.join(
-    #         item, newNameFile + ' - ' + localtime + '.pdf')
-
-    # print('Nome: ' + oldNameFile +
-    #         ' ----> ' + newNameFile + '\n')
-    # os.rename(oldFile, newFile)
 
 
 if __name__ == '__main__':
