@@ -4,24 +4,32 @@ import time
 from pdf import getPDFname
 
 
-def getPDFByPath(selected_folder):
+def getPDFByPath(selected_folder, window):
     folders = os.walk(selected_folder)
-    paths_filtered_by_PDF = []
+    # paths_filtered_by_PDF = []
 
-    for root, dirs, files in folders:
+    def filterByPDF(files) -> False:
         for file in files:
             if file.endswith(".pdf"):
-                pathObject = {
-                    "name": file,
-                    "path": root
-                }
-                paths_filtered_by_PDF.append(pathObject)
+                return True
 
-    return paths_filtered_by_PDF
+    def mapByPDF(root, dirs, files) -> {"name", "path"}:
+        for file in files:
+            pathObject = {
+                "name": file,
+                "path": root
+            }
+            return pathObject
+
+    paths_filtered_by_PDF = filter(filterByPDF, folders)
+    paths_filtered_by_PDF = map(mapByPDF, paths_filtered_by_PDF)
+
+    print(list(paths_filtered_by_PDF))
+    # return paths_filtered_by_PDF
 
 
 def rename(oldPaths, window, progress_value):
-    progress_bar = window.FindElement('progress_bar')
+    progress_bar = window.FindElement('-PROGRESS_BAR-')
     i = 0
 
     for item in oldPaths:
@@ -57,4 +65,4 @@ def rename(oldPaths, window, progress_value):
         os.rename(oldPathFile, newPathFile)
         i += progress_value
         progress_bar.UpdateBar(i)
-    window.write_event_value('-THREAD-', '** DONE **')
+    # window.write_event_value('-THREAD-', '** DONE **')
