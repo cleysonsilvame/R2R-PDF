@@ -1,58 +1,46 @@
 import os
-from datetime import datetime
 import time
-from pdf import getPDFname
+from pdf import getPDFname, getLocalTime
+from pathlib import Path
 
 
 def getPDFByPath(selected_folder, window):
-    folders = os.walk(selected_folder)
-    # paths_filtered_by_PDF = []
+    files = Path(selected_folder)
 
-    def filterByPDF(files) -> False:
-        for file in files:
-            if file.endswith(".pdf"):
-                return True
+    paths_filtered_by_PDF = map(lambda file: {
+        "name": file.name,
+        "path": file,
+        "root": file.parent
+    }, files.rglob("*.pdf"))
 
-    def mapByPDF(root, dirs, files) -> {"name", "path"}:
-        for file in files:
-            pathObject = {
-                "name": file,
-                "path": root
-            }
-            return pathObject
-
-    paths_filtered_by_PDF = filter(filterByPDF, folders)
-    paths_filtered_by_PDF = map(mapByPDF, paths_filtered_by_PDF)
-
-    print(list(paths_filtered_by_PDF))
-    # return paths_filtered_by_PDF
+    window.write_event_value('-THREAD_GET_PDF_BY_PATH-', paths_filtered_by_PDF)
 
 
-def rename(oldPaths, window, progress_value):
-    progress_bar = window.FindElement('-PROGRESS_BAR-')
-    i = 0
+def rename(oldPaths, window):
 
-    for item in oldPaths:
-        oldNameFile = item["name"]
+    totalPaths = len(oldPaths)
 
-        oldPathFile = os.path.join(item["path"], item["name"])
-        newNameFile = getPDFname(oldPathFile) + ".pdf"
+    progress_value = 0
 
-        newPathFile = os.path.join(item["path"], newNameFile)
+    for file in oldPaths:
+        progress_value += 100 / totalPaths
+        oldNameFile = file["name"]
+        oldPathFile = file["path"]
+        oldRootFile = file["root"]
+
+        newNameFile = getPDFname(oldPathFile)
+        newPathFile = os.path.join(oldRootFile, newNameFile + ".pdf")
 
         if os.path.exists(newPathFile):
             time.sleep(1)
-
-            now = datetime.now()
-            localtime = now.strftime(
-                "Data %m.%d.%Y - Hora %H.%M.%S")
+            localtime = getLocalTime()
 
             newPathFile = os.path.join(
-                item["path"],
+                oldRootFile,
                 newNameFile
                 + ' - '
                 + localtime
-                + '.pdf'
+                + ".pdf"
             )
 
         print(
@@ -60,9 +48,10 @@ def rename(oldPaths, window, progress_value):
             + oldNameFile
             + ' ----> '
             + newNameFile
+            + ".pdf"
             + '\n'
         )
+
         os.rename(oldPathFile, newPathFile)
-        i += progress_value
-        progress_bar.UpdateBar(i)
-    # window.write_event_value('-THREAD-', '** DONE **')
+
+    # window.write_event_value('-THREAD_GET_PDF_BY_PATH-', paths_filtered_by_PDF)

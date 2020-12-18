@@ -2,11 +2,11 @@ import PyPDF2 as pdf
 from datetime import datetime
 import re
 
-def getPDFname(path):
-    now = datetime.now()
-    nameFile = now.strftime("Data %m.%d.%Y - Hora %H.%M.%S")
 
-    pdfPath = pdf.PdfFileReader(path)
+def getPDFname(path):
+    nameFile = ''
+
+    pdfPath = pdf.PdfFileReader(str(path))
     page = pdfPath.getPage(0)
 
     pageString = page.extractText()
@@ -28,3 +28,9 @@ def getPDFname(path):
 def clearString(nameFile):
     nameFile = re.sub('[^0-9]', '', nameFile)
     return nameFile
+
+
+def getLocalTime():
+    now = datetime.now()
+    localtime = now.strftime("Data %m.%d.%Y - Hora %H.%M.%S")
+    return localtime
