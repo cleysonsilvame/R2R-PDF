@@ -17,7 +17,7 @@ def getPDFByPath(selected_folder, window):
     window.write_event_value('-THREAD_GET_PDF_BY_PATH-', paths_filtered_by_PDF)
 
 
-def rename(oldPaths, window):
+def setPDFName(oldPaths, window):
     timer_start = timeit.default_timer()
 
     totalPaths = len(oldPaths)
