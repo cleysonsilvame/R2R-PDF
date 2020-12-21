@@ -34,7 +34,7 @@ def start(layout):
 # --------------------- EVENT LOOP ---------------------
     while True:
 
-        event, values = window.read()
+        event, values = window.Read(1000)
 
         if event == 'Procurar Arquivos':
             try:
