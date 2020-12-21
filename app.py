@@ -34,7 +34,7 @@ def start(layout):
 # --------------------- EVENT LOOP ---------------------
     while True:
 
-        event, values = window.Read(1000)
+        event, values = window.Read(timeout=1000)
 
         if event == 'Procurar Arquivos':
             try:
@@ -101,17 +101,21 @@ def start(layout):
         elif event == '-THREAD_DONE-':
             timer = values[event]
 
-            print('Arquivos renomeados com sucesso! \n O tempo de tarefa foi:',
-                  f'{timer:.02f}s', '\n')
+            progress_bar.Update(current_count=0, visible=False)
+
+            print(
+                "# ------------------------------- ARQUIVOS RENOMEADO COM SUCESSO -------------------------------")
+            print('O tempo de tarefa foi:', f'{timer:.02f}s', '\n')
 
         elif event == '-THREAD_GET_PDF_BY_PATH-':
-            paths_filtered_by_PDF = list(values[event])
+            paths_filtered_by_PDF = values[event]
             totalPaths = len(paths_filtered_by_PDF)
 
             print('O total de arquivos encontrados foi:', totalPaths, '\n')
 
-            start_button.Update(disabled=False)
-            verify_button.Update(disabled=False)
+            if totalPaths > 0:
+                start_button.Update(disabled=False)
+                verify_button.Update(disabled=False)
 
         elif event == 'Fechar' or event == sg.WIN_CLOSED:
             break

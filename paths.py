@@ -13,6 +13,8 @@ def getPDFByPath(selected_folder, window):
         "root": file.parent
     }, files.rglob("*.pdf"))
 
+    paths_filtered_by_PDF = list(paths_filtered_by_PDF)
+
     window.write_event_value('-THREAD_GET_PDF_BY_PATH-', paths_filtered_by_PDF)
 
 
