@@ -1,8 +1,7 @@
-import os
 import time
 import timeit
 from handlerPdf import getPDFname, getLocalTime
-from pathlib import Path
+from pathlib import Path, PurePath
 
 
 def getPDFByPath(selected_folder, window):
@@ -27,23 +26,24 @@ def setPDFName(oldPaths, window):
     for file in oldPaths:
         progress_value += 100 / totalPaths
         oldNameFile = file["name"]
-        oldPathFile = file["path"]
-        oldRootFile = file["root"]
+        oldPathFile = Path(file["path"]).resolve()
+        oldRootFile = Path(file["root"]).resolve()
 
         newNameFile = getPDFname(oldPathFile)
-        newPathFile = os.path.join(oldRootFile, newNameFile + ".pdf")
 
-        if os.path.exists(newPathFile):
+        newPathFile = Path(oldRootFile, newNameFile + ".pdf").resolve()
+
+        if newPathFile.exists():
             time.sleep(1)
             localtime = getLocalTime()
 
-            newPathFile = os.path.join(
+            newNameFile += ' - ' + localtime
+
+            newPathFile = Path(
                 oldRootFile,
                 newNameFile
-                + ' - '
-                + localtime
                 + ".pdf"
-            )
+            ).resolve()
 
         print(
             'Nome: '
@@ -54,7 +54,7 @@ def setPDFName(oldPaths, window):
             + '\n'
         )
 
-        os.rename(oldPathFile, newPathFile)
+        oldPathFile.rename(newPathFile)
         window.write_event_value('-PROGRESS-', progress_value)
 
     timer_stop = timeit.default_timer()
