@@ -1,7 +1,7 @@
 import os
 import time
 import timeit
-from pdf import getPDFname, getLocalTime
+from handlerPdf import getPDFname, getLocalTime
 from pathlib import Path
 
 
