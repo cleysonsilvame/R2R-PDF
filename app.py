@@ -1,4 +1,4 @@
-from paths import getPDFByPath, setPDFName
+from paths import getPDFByPath, setPDFName, getAbsolutePath
 import PySimpleGUI as sg
 import threading
 
@@ -23,7 +23,11 @@ def layout():
 
 
 def start(layout):
-    window = sg.Window("R2R-PDF - Robô para PDF's", layout)
+    window = sg.Window(
+        "R2R-PDF - Robô para PDF's",
+        layout,
+        icon=getAbsolutePath('./src/pdf.ico'))
+        
     start_button = window.FindElement('Iniciar')
     verify_button = window.FindElement('Verificar Arquivos')
     progress_bar = window.FindElement('-PROGRESS_BAR-')
@@ -37,6 +41,8 @@ def start(layout):
         event, values = window.Read(timeout=1000)
 
         if event == 'Procurar Arquivos':
+            print()
+
             try:
                 progress_bar.Update(current_count=0, visible=False)
 

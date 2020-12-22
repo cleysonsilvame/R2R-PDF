@@ -61,3 +61,7 @@ def setPDFName(oldPaths, window):
 
     timer_stop = timeit.default_timer()
     window.write_event_value('-THREAD_DONE-', (timer_stop - timer_start))
+
+
+def getAbsolutePath(path):
+    return Path(path).resolve()
